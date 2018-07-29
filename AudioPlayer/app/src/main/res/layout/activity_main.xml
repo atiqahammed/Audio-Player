@@ -15,6 +15,7 @@
         android:layout_marginTop="60dp"/>
 
     <SeekBar
+        android:id="@+id/positionBar"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp" />
@@ -23,11 +24,13 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/elopledTimeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Left Test"
             android:layout_marginRight="50dp"/>
         <TextView
+            android:id="@+id/remaindingTimeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Right Test"
@@ -36,9 +39,25 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/playBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@drawable/play_button"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:onClick="playBtnClick"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center">
+        
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp" />
+
+
+    </LinearLayout>
 
 </LinearLayout>
