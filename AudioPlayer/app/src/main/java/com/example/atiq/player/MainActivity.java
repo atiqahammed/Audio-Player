@@ -16,36 +16,21 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button playBtn;
-    SeekBar positionBar;
-    TextView elopledTimeLabel;
-    TextView remaindingTimeLabel;
-    int backButtonCount = 0;
+    private Button playBtn;
+    private SeekBar positionBar;
+    private TextView elopledTimeLabel;
+    private TextView remaindingTimeLabel;
+    private int backButtonCount = 0;
 
-    // media player
-    MediaPlayer mediaPlayer;// = MediaPlayer.create(this, R.raw.music);
-    int totalTime;
+
+    MediaPlayer mediaPlayer;
+    private int totalTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        playBtn = (Button) findViewById(R.id.playBtn);
-        positionBar = (SeekBar) findViewById(R.id.positionBar);
-        elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
-        remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
-
-
-        mediaPlayer = MediaPlayer.create(this, R.raw.music);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.seekTo(0);
-        mediaPlayer.setVolume(0.5f, 0.5f);
-        totalTime = mediaPlayer.getDuration();
-
-        positionBar.setMax(totalTime);
-
+        initiateComponent();
 
         positionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -66,9 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-
         // thread update position bar
         new Thread(new Runnable() {
             @Override
@@ -87,29 +69,26 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-
-    // this part is not working in this section
-    /*
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        Log.i("Instance state", "onSaveInstanceState");
+    private void initiateComponent() {
+        playBtn = (Button) findViewById(R.id.playBtn);
+        positionBar = (SeekBar) findViewById(R.id.positionBar);
+        elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
+        remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
+        mediaPlayer = MediaPlayer.create(this, R.raw.music);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.seekTo(0);
+        mediaPlayer.setVolume(0.5f, 0.5f);
+        totalTime = mediaPlayer.getDuration();
+        positionBar.setMax(totalTime);
     }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-        Log.i("Instance state", "onRestoreInstanceState");
-    }
-*/
 
     @Override
     public void onBackPressed()
     {
         if(backButtonCount >= 1)
         {
-            backButtonCount++;
-            Toast.makeText(this, "number of pressed back button = "+backButtonCount , Toast.LENGTH_SHORT).show();
+            backButtonCount = 0;
+            Toast.makeText(this, "Exited from Audio Player." , Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -143,15 +122,12 @@ public class MainActivity extends AppCompatActivity {
         int min = time / 1000 / 60;
         int sec = (time / 1000) % 60;
 
-
         timeLabel = min + ":";
         if(sec < 10) {
             timeLabel += "0";
         }
             timeLabel += sec;
-
-
-
+        
         return timeLabel;
     }
 
