@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.res.Configuration;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -141,29 +143,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation ==
-                Configuration.ORIENTATION_LANDSCAPE) {
-            // Change things
-        } else if (newConfig.orientation ==
-                Configuration.ORIENTATION_PORTRAIT){
-            // Change other things
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setContentView(R.layout.activity_main_land);
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setContentView(R.layout.activity_main);
         }
     }
-
-    /*
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        Log.i("Instance State", "onSaveInstanceState");
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
-        Log.i("Instance State", "onRestoreInstanceState");
-    }*/
 }
