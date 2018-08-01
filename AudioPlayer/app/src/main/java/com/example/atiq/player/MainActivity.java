@@ -3,8 +3,10 @@ package com.example.atiq.player;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -81,6 +83,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+
+    // this part is not working in this section
+    /*
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        Log.i("Instance state", "onSaveInstanceState");
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+        Log.i("Instance state", "onRestoreInstanceState");
+    }
+*/
+
 
     private Handler handler = new Handler() {
         @Override
