@@ -140,4 +140,30 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.pause();
         }
     }
+
+    /*
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation ==
+                Configuration.ORIENTATION_LANDSCAPE) {
+            // Change things
+        } else if (newConfig.orientation ==
+                Configuration.ORIENTATION_PORTRAIT){
+            // Change other things
+        }
+    }
+
+    /*
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        Log.i("Instance State", "onSaveInstanceState");
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+        Log.i("Instance State", "onRestoreInstanceState");
+    }*/
 }
