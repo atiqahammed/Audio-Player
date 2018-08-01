@@ -127,14 +127,16 @@ public class MainActivity extends AppCompatActivity {
             timeLabel += "0";
         }
             timeLabel += sec;
-        
+
         return timeLabel;
     }
 
     public void playBtnClick(View view) {
         if(!mediaPlayer.isPlaying()) {
+            playBtn.setBackgroundResource(R.drawable.pause_icon);
             mediaPlayer.start();
         } else {
+            playBtn.setBackgroundResource(R.drawable.play_icon);
             mediaPlayer.pause();
         }
     }
