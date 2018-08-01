@@ -1,5 +1,6 @@
 package com.example.atiq.player;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     SeekBar positionBar;
     TextView elopledTimeLabel;
     TextView remaindingTimeLabel;
+    int backButtonCount = 0;
 
     // media player
     MediaPlayer mediaPlayer;// = MediaPlayer.create(this, R.raw.music);
@@ -100,6 +103,24 @@ public class MainActivity extends AppCompatActivity {
     }
 */
 
+    @Override
+    public void onBackPressed()
+    {
+        if(backButtonCount >= 1)
+        {
+            backButtonCount++;
+            Toast.makeText(this, "number of pressed back button = "+backButtonCount , Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(this, "Press the back button once again to close the application.", Toast.LENGTH_SHORT).show();
+            backButtonCount++;
+        }
+    }
 
     private Handler handler = new Handler() {
         @Override
