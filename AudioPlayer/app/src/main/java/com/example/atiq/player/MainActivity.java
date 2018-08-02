@@ -7,6 +7,7 @@ import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button playBtn;
     private SeekBar positionBar;
+    private SeekBar volumeBar;
+    private SeekBar positionBarLand;
     private TextView elopledTimeLabel;
     private TextView remaindingTimeLabel;
     private int backButtonCount = 0;
@@ -33,6 +36,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initiateComponent();
+
+        volumeBar.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        float valumeNumber = progress / 100f;
+                        mediaPlayer.setVolume(valumeNumber, valumeNumber);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                }
+        );
 
         positionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -74,9 +97,10 @@ public class MainActivity extends AppCompatActivity {
     private void initiateComponent() {
         playBtn = (Button) findViewById(R.id.playBtn);
         positionBar = (SeekBar) findViewById(R.id.positionBar);
+        volumeBar = (SeekBar) findViewById(R.id.volumeBar);
         elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
         remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
-        mediaPlayer = MediaPlayer.create(this, R.raw.music);
+        mediaPlayer = MediaPlayer.create(this, R.raw.nillayo);
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         mediaPlayer.setVolume(0.5f, 0.5f);
@@ -89,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
     {
         if(backButtonCount >= 1)
         {
+            playBtn.setBackgroundResource(R.drawable.play_icon);
+            mediaPlayer.pause();
             backButtonCount = 0;
             Toast.makeText(this, "Exited from Audio Player." , Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -112,10 +138,9 @@ public class MainActivity extends AppCompatActivity {
 
             String elopseTime = createTimeLabel(currentPosition);
             String remindingTime = createTimeLabel(totalTime - currentPosition);
-
             elopledTimeLabel.setText(elopseTime);
             remaindingTimeLabel.setText("- "+remindingTime);
-
+            
         }
     };
 
@@ -143,16 +168,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    /*
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
 
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setContentView(R.layout.activity_main_land);
+            positionBarLand = positionBar;
 
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.activity_main);
+            positionBar = positionBarLand;
         }
-    }
+    }*/
 }

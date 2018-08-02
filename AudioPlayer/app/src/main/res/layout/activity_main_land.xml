@@ -37,7 +37,7 @@
         android:gravity="center_horizontal">
 
         <SeekBar
-            android:id="@+id/positionBar"
+            android:id="@+id/positionBar_land"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:padding="30dp"/>
