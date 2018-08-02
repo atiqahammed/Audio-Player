@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             String remindingTime = createTimeLabel(totalTime - currentPosition);
             elopledTimeLabel.setText(elopseTime);
             remaindingTimeLabel.setText("- "+remindingTime);
-            
+
         }
     };
 
@@ -167,19 +167,4 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.pause();
         }
     }
-
-    /*
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setContentView(R.layout.activity_main_land);
-            positionBarLand = positionBar;
-
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setContentView(R.layout.activity_main);
-            positionBar = positionBarLand;
-        }
-    }*/
 }
