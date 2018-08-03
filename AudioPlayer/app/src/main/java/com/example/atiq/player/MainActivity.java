@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         volumeBar = (SeekBar) findViewById(R.id.volumeBar);
         elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
         remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
-        mediaPlayer = MediaPlayer.create(this, R.raw.nillayo);
+        mediaPlayer = MediaPlayer.create(this, R.raw.music);
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         mediaPlayer.setVolume(0.5f, 0.5f);
