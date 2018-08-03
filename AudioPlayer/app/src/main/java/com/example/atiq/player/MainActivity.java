@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar positionBarLand;
     private TextView elopledTimeLabel;
     private TextView remaindingTimeLabel;
+    private Button songList;
     private int backButtonCount = 0;
 
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        backButtonCount = 0;
         initiateComponent();
 
         volumeBar.setOnSeekBarChangeListener(
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initiateComponent() {
+        songList = (Button) findViewById(R.id.song_list_btn);
         playBtn = (Button) findViewById(R.id.playBtn);
         positionBar = (SeekBar) findViewById(R.id.positionBar);
         volumeBar = (SeekBar) findViewById(R.id.volumeBar);
@@ -113,10 +116,9 @@ public class MainActivity extends AppCompatActivity {
     {
         if(backButtonCount >= 1)
         {
-            playBtn.setBackgroundResource(R.drawable.play_icon);
-            mediaPlayer.pause();
+            //playBtn.setBackgroundResource(R.drawable.play_icon);
             backButtonCount = 0;
-            Toast.makeText(this, "Exited from Audio Player." , Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Exited from Player." , Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -160,11 +162,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void playBtnClick(View view) {
         if(!mediaPlayer.isPlaying()) {
+            backButtonCount = 0;
             playBtn.setBackgroundResource(R.drawable.pause_icon);
             mediaPlayer.start();
         } else {
+            backButtonCount = 0;
             playBtn.setBackgroundResource(R.drawable.play_icon);
             mediaPlayer.pause();
         }
+    }
+
+
+    public void songListView(View view) {
+        backButtonCount = 0;
+        Intent intent = new Intent(this, SongList.class);
+        startActivity(intent);
+
+    }
+
+    public void stopPlayer(View view) {
+        mediaPlayer.pause();
+        playBtn.setBackgroundResource(R.drawable.play_icon);
+        backButtonCount = 0;
+        Toast.makeText(this, "Player Stopped" , Toast.LENGTH_SHORT).show();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory( Intent.CATEGORY_HOME );
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
+
+        /*android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);*/
     }
 }

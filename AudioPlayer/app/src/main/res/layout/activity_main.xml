@@ -37,13 +37,49 @@
         android:gravity="center_horizontal">
 
 
-        <Button
-            android:id="@+id/playBtn"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@drawable/play_icon"
-            android:padding="10dp"
-            android:onClick="playBtnClick"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+
+            <Button
+                android:id="@+id/idontknow"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/stop_icon"
+                android:padding="10dp"
+                android:onClick="stopPlayer" />
+
+
+            <Button
+                android:id="@+id/playBtn"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/play_icon"
+                android:onClick="playBtnClick"
+                android:padding="10dp" />
+
+            <Button
+                android:id="@+id/song_list_btn"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/song_list"
+                android:onClick="songListView"
+                android:padding="10dp" />
+
+
+
+        </RelativeLayout>
+
+
+
 
 
         <LinearLayout
