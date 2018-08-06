@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.media.AudioManager;
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -150,7 +152,40 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+                mediaPlayer.stop();
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+                try {
+
+                    mediaPlayer.setDataSource(getApplicationContext(), uri);
+
+                } catch (IllegalArgumentException e) {
+
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (SecurityException e) {
+
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IllegalStateException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mediaPlayer.prepare();
+                } catch (IllegalStateException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                }
+
+
+                backButtonCount = 0;
+                playBtn.setBackgroundResource(R.drawable.pause_icon);
+                mediaPlayer.start();
+
 
 
                 /// /Log.i(TAG, "Uri: " + uri.toString());
