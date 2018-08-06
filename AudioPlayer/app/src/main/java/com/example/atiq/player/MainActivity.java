@@ -1,5 +1,6 @@
 package com.example.atiq.player;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -15,9 +16,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.res.Configuration;
+import android.net.Uri;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE = 43;
 
     private Button playBtn;
     private SeekBar positionBar;
@@ -97,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    ////////////////////////////////////////////////////////////////
 
 
 
@@ -105,62 +108,60 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //
 
+    private static final int READ_REQUEST_CODE = 42;
 
+    /**
+     * Fires an intent to spin up the "file chooser" UI and select an image.
+     */
+    public void performFileSearch() {
 
+        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+        // browser.
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 
-
-
-
-
-
-
-
-
-
-    /////////////////////////////////////////////////////////
-
-    private static final int FILE_SELECT_CODE = 0;
-
-    private void showFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        // Filter to only show results that can be "opened", such as a
+        // file (as opposed to a list of contacts or timezones)
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        try {
-            startActivityForResult(
-                    Intent.createChooser(intent, "Select a File to Upload"),
-                    FILE_SELECT_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.",
-                    Toast.LENGTH_SHORT).show();
+        // Filter to show only images, using the image MIME data type.
+        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+        // To search for all documents available via installed storage providers,
+        // it would be "*/*".
+        intent.setType("audio/*");
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
+        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
+        // response to some other intent, and the code below shouldn't run at all.
+
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.
+            // Pull that URI using resultData.getData().
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+
+
+                /// /Log.i(TAG, "Uri: " + uri.toString());
+                //showImage(uri);
+            }
         }
     }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ////////////////////////////////////////////////////////////
-
-
-
-
+    //
 
 
 
@@ -174,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         volumeBar = (SeekBar) findViewById(R.id.volumeBar);
         elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
         remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
+
         mediaPlayer = MediaPlayer.create(this, R.raw.music);
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
@@ -183,10 +185,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed()
-    {
-        if(backButtonCount >= 1)
-        {
+    public void onBackPressed() {
+        if(backButtonCount >= 1) {
             //playBtn.setBackgroundResource(R.drawable.play_icon);
             backButtonCount = 0;
             Toast.makeText(this, "Exited from Player." , Toast.LENGTH_SHORT).show();
@@ -194,9 +194,7 @@ public class MainActivity extends AppCompatActivity {
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }
-        else
-        {
+        } else {
             Toast.makeText(this, "Press the back button once again to close the application.", Toast.LENGTH_SHORT).show();
             backButtonCount++;
         }
@@ -245,10 +243,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void songListView(View view) {
-        backButtonCount = 0;
+        performFileSearch();
+       /* backButtonCount = 0;
         Intent intent = new Intent(this, SongList.class);
         startActivity(intent);
-
+    */
     }
 
     public void stopPlayer(View view) {
