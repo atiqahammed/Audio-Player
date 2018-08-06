@@ -23,8 +23,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 43;
-
+    private Uri uri = null;
     private Button playBtn;
     private SeekBar positionBar;
     private SeekBar volumeBar;
@@ -33,38 +32,40 @@ public class MainActivity extends AppCompatActivity {
     private TextView remaindingTimeLabel;
     private Button songList;
     private int backButtonCount = 0;
-
-
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
     private int totalTime;
+    private static final int READ_REQUEST_CODE = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        backButtonCount = 0;
+
         initiateComponent();
+        updateVolume();
+        updatePosition();
+        continuingMusic();
+    }
 
-        volumeBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        float valumeNumber = progress / 100f;
-                        mediaPlayer.setVolume(valumeNumber, valumeNumber);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
+    private void continuingMusic() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(mediaPlayer != null) {
+                    Message message = new Message();
+                    message.what = mediaPlayer.getCurrentPosition();
+                    handler.sendMessage(message);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-        );
+            }
+        }).start();
+    }
 
+    private void updatePosition() {
         positionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -84,55 +85,34 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        // thread update position bar
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(mediaPlayer != null) {
-                    Message message = new Message();
-                    message.what = mediaPlayer.getCurrentPosition();
-                    handler.sendMessage(message);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
     }
 
+    private void updateVolume() {
+        volumeBar.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        float valumeNumber = progress / 100f;
+                        mediaPlayer.setVolume(valumeNumber, valumeNumber);
+                    }
 
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
 
+                    }
 
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
 
+                    }
+                }
+        );
+    }
 
-
-
-
-    //
-
-    private static final int READ_REQUEST_CODE = 42;
-
-    /**
-     * Fires an intent to spin up the "file chooser" UI and select an image.
-     */
     public void performFileSearch() {
-
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-        // browser.
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        // Filter to show only images, using the image MIME data type.
-        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-        // To search for all documents available via installed storage providers,
-        // it would be "*/*".
         intent.setType("audio/*");
-
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
@@ -140,77 +120,55 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
 
-        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
-        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
-        // response to some other intent, and the code below shouldn't run at all.
-
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.
-            // Pull that URI using resultData.getData().
-            Uri uri = null;
             if (resultData != null) {
-                uri = resultData.getData();
-                //Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
-                mediaPlayer.stop();
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-                try {
-
-                    mediaPlayer.setDataSource(getApplicationContext(), uri);
-
-                } catch (IllegalArgumentException e) {
-
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (SecurityException e) {
-
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IllegalStateException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    mediaPlayer.prepare();
-                } catch (IllegalStateException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                }
-
-
-                backButtonCount = 0;
-                playBtn.setBackgroundResource(R.drawable.pause_icon);
-                mediaPlayer.start();
-
-
-
-                /// /Log.i(TAG, "Uri: " + uri.toString());
-                //showImage(uri);
+                updateMusicPlayerWithSelectedFile(resultData);
+                exceptionCheckToInitializeMusicPlayer();
+                prepareMusicPlayer();
+                playMusic();
             }
         }
     }
 
+    private void prepareMusicPlayer() {
+        try {
+            mediaPlayer.prepare();
+        } catch (IllegalStateException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        }
+    }
 
+    private void exceptionCheckToInitializeMusicPlayer() {
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), uri);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (SecurityException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IllegalStateException e) {
+            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-    //
-
-
-
-
-
+    private void updateMusicPlayerWithSelectedFile(Intent resultData) {
+        uri = resultData.getData();
+        mediaPlayer.stop();
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    }
 
     private void initiateComponent() {
+        backButtonCount = 0;
         songList = (Button) findViewById(R.id.song_list_btn);
         playBtn = (Button) findViewById(R.id.playBtn);
         positionBar = (SeekBar) findViewById(R.id.positionBar);
         volumeBar = (SeekBar) findViewById(R.id.volumeBar);
         elopledTimeLabel = (TextView) findViewById(R.id.elopledTimeLabel);
         remaindingTimeLabel = (TextView) findViewById(R.id.remaindingTimeLabel);
-
         mediaPlayer = MediaPlayer.create(this, R.raw.music);
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
@@ -256,24 +214,27 @@ public class MainActivity extends AppCompatActivity {
         int sec = (time / 1000) % 60;
 
         timeLabel = min + ":";
-        if(sec < 10) {
-            timeLabel += "0";
-        }
-            timeLabel += sec;
+        if(sec < 10) timeLabel += "0";
 
+        timeLabel += sec;
         return timeLabel;
     }
 
     public void playBtnClick(View view) {
-        if(!mediaPlayer.isPlaying()) {
-            backButtonCount = 0;
-            playBtn.setBackgroundResource(R.drawable.pause_icon);
-            mediaPlayer.start();
-        } else {
-            backButtonCount = 0;
-            playBtn.setBackgroundResource(R.drawable.play_icon);
-            mediaPlayer.pause();
-        }
+        if(!mediaPlayer.isPlaying()) playMusic();
+        else pauseMusic();
+    }
+
+    private void pauseMusic() {
+        backButtonCount = 0;
+        playBtn.setBackgroundResource(R.drawable.play_icon);
+        mediaPlayer.pause();
+    }
+
+    private void playMusic() {
+        backButtonCount = 0;
+        playBtn.setBackgroundResource(R.drawable.pause_icon);
+        mediaPlayer.start();
     }
 
 
@@ -286,16 +247,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopPlayer(View view) {
-        mediaPlayer.pause();
-        playBtn.setBackgroundResource(R.drawable.play_icon);
-        backButtonCount = 0;
+        pauseMusic();
+        exitingFromApp();
+    }
+
+    private void exitingFromApp() {
         Toast.makeText(this, "Player Stopped" , Toast.LENGTH_SHORT).show();
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory( Intent.CATEGORY_HOME );
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
-
-        /*android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);*/
     }
 }
